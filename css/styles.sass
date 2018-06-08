@@ -1,0 +1,61 @@
+@import "normalize"
+
+.timeline
+	margin-top: 50px
+
+.post-unit
+	border: 1px solid rgba(black, 0.2)
+	padding: 20px
+	border-radius: 10px
+	transition: all ease-in-out 300ms
+	cursor: pointer
+	margin-bottom: 30px
+	display: flex
+	&:hover
+		transform: scale(1.1)
+		box-shadow: 0px 5px 8px 5px rgba(black, 0.2)
+	.face
+		width: 50px
+		height: 50px
+		background:
+			image: url("../img/default.jpg")
+			size: cover
+			position: top center
+		margin-right: 20px
+		align-self: end
+		border-radius: 50%
+	.content
+		flex: 1
+		align-self: end
+
+.profile-unit
+	text-align: center
+	.face
+		width: 200px
+		height: 200px
+		display: block
+		margin: 0 auto 20px
+		background:
+			size: cover
+			repeat: no-repeat
+
+.thumb-wrapper
+	padding: 20px
+.thumb-unit
+	img
+		width: 100%
+
+
+#inner-form-search
+	position: relative
+	#result
+		position: absolute
+		top: 120%
+		width: 400px
+		right: 30%
+		padding: 20px
+		z-index: 1000
+		opacity: 0
+		background: whitw
+		&.active
+			opacity: 1
