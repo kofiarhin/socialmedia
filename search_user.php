@@ -33,9 +33,42 @@ if(input::exist('post', 'follow_submit')) {
 	);
 
 
-	var_dump($fields);
+	$follow = $user->follow($fields);
+
+	if($follow) {
+
+		redirect::to("timeline.php");
+	} else {
 
 
+		?>
+
+		<p class="alert alert-danger">There was a problem following user</p>
+
+		<?php
+	}
+
+
+
+
+}
+
+
+
+//check if unfollow button clicked
+
+if(input::exist('post',  'unfollow_submit')) {
+
+
+	//undoloow user
+
+	$unfollow = $user->unfollow(session::get('user'), input::get('person_id'));
+
+	if($unfollow) {
+
+
+		redirect::to('timeline.php');
+	}
 }
 
 
@@ -57,29 +90,70 @@ if(input::exist('post', 'follow_submit')) {
 
 		if($users) {
 
-			foreach($users as $user) {
+			//var_dump($users[0]);
+
+			foreach($users as $data) {
+
+				//var_dump($user);
+
+				$name = $data->name;
+				$person_id = $data->user_id;
 
 
-				$name = $user->name;
-				$person_id = $user->user_id;
+				
+
 
 
 				if($person_id  != $user_id) {
+
+					//echo $person_id;
+
+					$person = new User($person_id);
+
+					$profile_pic = $person->get_profile_picture();
+
 
 					?>
 
 					<div class="col-md-3">
 
 						<div class="thumb-unit">
-							<img src="img/default.jpg" alt="" class='thumbnail'>
+							<div class="face" style="background-image: url(img/<?php echo $profile_pic; ?>)"></div>
 							<div class="content">
-								<p class="text lead">Name: <?php echo $name ?></p>
+								<p class='lead'>
+									<a href="view_user_profile?person_id=<?php echo $person_id ?>" class="text lead">Name: <?php echo $name ?></a>
+
+								</p>
 
 								<!--====  follow user form=======-->
 
 								<form action="" method='post'>
 									<input type="hidden" name='person_id' value='<?php echo $person_id; ?>'>
-									<button class='btn btn-primary' type='submit' name='follow_submit'>Follow</button>
+
+									<?php 
+
+												//check if user is following
+									if($user->check_following($user_id, $person_id)) {
+
+
+
+										?>
+
+										<button class='btn btn-danger' type='submit' name='unfollow_submit'>Unfollow</button>						
+
+										<?php 
+									} else {
+
+
+										?>
+
+
+										<button class='btn btn-primary' type='submit' name='follow_submit'>Follow</button>
+
+										<?php 
+									}
+
+									?>
 								</form>
 							</div> 
 						</div>
@@ -98,7 +172,7 @@ if(input::exist('post', 'follow_submit')) {
 
 
 
-			
+
 
 			}
 		}

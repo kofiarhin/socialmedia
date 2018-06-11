@@ -10,6 +10,9 @@ if(!$user->logged_in()) {
 }
 
 
+$user_id = $user->data()->user_id;
+
+
 $profile_picture = $user->get_profile_picture();
 
 

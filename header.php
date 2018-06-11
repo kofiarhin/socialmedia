@@ -28,9 +28,7 @@ $user = new User;
 			
 			<div class="collapse navbar-collapse" id="navbarTogglerDemo02">
 				<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-					<li class="nav-item">
-						<a class="nav-link" href="timeline.php">Timeline</a>
-					</li>
+					
 
 					<?php 
 
@@ -43,6 +41,10 @@ $user = new User;
 
 						<li class="nav-item">
 							<a class="nav-link text-capitalize" href="profile.php?user_id=<?php echo $user_id; ?>"><?php echo $user->data()->username; ?></a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" href="timeline.php">Timeline</a>
 						</li>
 
 						<li class="nav-item">
@@ -88,16 +90,23 @@ $user = new User;
 					?>
 					
 				</ul>
-				<form 
-				action= "" method='post' class="form-inline my-2 my-lg-0" id="inner-form-search">
-				<input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" id='search'>
-				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
 
-				<div id="result">
-					
-					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt quisquam excepturi, laboriosam illum! Aperiam voluptate, esse omnis dolor odio natus tempore sunt doloribus dicta deleniti ab fuga suscipit. Reprehenderit, qui!
-				</div>
-			</form>
+				<?php 
+
+				if($user->logged_in()) {
+
+					?>
+
+					<form 
+					action= "" method='post' class="form-inline my-2 my-lg-0" id="inner-form-search">
+					<input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" id='search'>
+					<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+				</form>
+
+				<?php 
+			}
+
+			?>
 		</div>
 	</nav>
 </div>

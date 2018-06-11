@@ -11,6 +11,7 @@
 	cursor: pointer
 	margin-bottom: 30px
 	display: flex
+	position: relative
 	&:hover
 		transform: scale(1.1)
 		box-shadow: 0px 5px 8px 5px rgba(black, 0.2)
@@ -18,7 +19,6 @@
 		width: 50px
 		height: 50px
 		background:
-			image: url("../img/default.jpg")
 			size: cover
 			position: top center
 		margin-right: 20px
@@ -27,6 +27,10 @@
 	.content
 		flex: 1
 		align-self: end
+	.delete_btn
+		position: absolute
+		right: 20px
+		top: 5%
 
 .profile-unit
 	text-align: center
@@ -42,9 +46,13 @@
 .thumb-wrapper
 	padding: 20px
 .thumb-unit
-	img
-		width: 100%
-
+	margin-bottom: 20px
+	.face
+		width: 200px
+		height: 200px
+		background:
+			size: cover
+			position: top center
 
 #inner-form-search
 	position: relative
@@ -56,6 +64,33 @@
 		padding: 20px
 		z-index: 1000
 		opacity: 0
-		background: whitw
+		background: white
+		box-shadow: 0px 5px 10px 4px rgba(black, 0.2)
+
 		&.active
 			opacity: 1
+.comment-unit
+	margin-top: 50px
+	padding: 20px
+	.post
+		font-size: 20px
+		line-height: 1.2
+		margin-bottom: 50px
+		padding: 30px 20px
+		border: 1px solid rgba(black, 0.2)
+	.comments
+		.user-unit
+			display: flex
+			margin-bottom: 20px
+			padding: 20px
+			border: 1px solid rgba(black, 0.2)
+			.face
+				width: 50px
+				height: 50px
+				background:
+					size: cover
+					position: center
+				margin-right: 20px
+				border-radius: 50%
+			.content
+				flex: 1

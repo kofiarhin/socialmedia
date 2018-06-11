@@ -31,14 +31,16 @@ $datas = $post->get_following_post($user->data()->user_id);
 
 	<div class="row">
 
-		<div class="col-6 offset-md-2">
+		
+
+		<div class="col-md-8 offset-md-2">
 
 
 			<?php 
 
 			//check for session messages
 
-			session::test();
+			//session::test();
 
 			if(session::exist('messages')) {
 
@@ -54,8 +56,8 @@ $datas = $post->get_following_post($user->data()->user_id);
 				
 
 				?>
-		
-						<p class="alert alert-success"><?php echo session::flash('profile_update') ?></p>
+
+				<p class="alert alert-success"><?php echo session::flash('profile_update') ?></p>
 
 
 				<?php 
@@ -102,6 +104,97 @@ $datas = $post->get_following_post($user->data()->user_id);
 			}
 
 
+			//add comment
+
+			if(input::exist('post', 'comment_submit')) {
+
+
+				$fields = array(
+
+					'post_id' => (int) input::get('post_id'),
+					'user_id' => (int) input::get('user_id'),
+					'comment_body' => input::get('comment'),
+					'comment_date' => date("Y-m-d H:i:s")
+
+				);
+
+
+				$post  = new Posts;
+
+				$comment = $post->add_comment($fields);
+
+				var_dump($comment);
+
+				if($comment) {
+
+					redirect::to('timeline.php');
+				}
+			}
+
+
+			//like comment
+
+			if(input::exist('post', 'like_submit')) {
+
+
+				$fields = array(
+
+					'post_id' => input::get('post_id'),
+					'user_id' => input::get('user_id'),
+					'like_date' => date('Y-m-d H:i:s')
+
+				);
+
+
+				$like = $post->like($fields);
+
+				if($like) {
+
+
+					redirect::to('timeline.php');
+				}
+			}
+
+			//delete button
+
+			if(input::exist('post', 'delete_submit')) {
+
+				$fields = array(
+
+					'post_id' => input::get('post_id'), 
+					'user_id' => input::get('user_id')
+
+				);
+
+
+				if($post->delete($fields)) {
+
+					redirect::to('timeline.php');
+				} else {
+
+					?>
+					<p class="alert alert-danger">There was a problem deleting post</p>
+
+					<?php 
+				}
+			}
+
+
+			//unlike button
+
+
+			if(input::exist('post', 'unlike_submit')) {
+
+
+				$unlike = $post->unlike(input::get('post_id'), input::get('user_id'));
+
+				if($unlike) {
+
+
+					redirect::to('timeline.php');
+				}
+			}
+
 
 			?>
 
@@ -125,61 +218,151 @@ $datas = $post->get_following_post($user->data()->user_id);
 
 	<div class="row timeline">
 
+
+
+
 		<div class="col-md-8 offset-md-2">
+
+
+			<?php 
+
+			//get followers post
+
+			$datas = $user->get_followers_post($user_id);
+
+
+			if($datas) {
+
+				//var_dump($datas[0]);
+
+				foreach($datas as $data) {
+
+
+					$name = $data->name;
+					$post_body = $data->post_body;
+					$post_id = $data->post_id;
+					$post_comments = $data->post_comments;
+					$likes = $data->post_likes;
+					$follower_id = $data->follower_id;
+
+
+
+
+					$user = new User($follower_id);
+
+					$profile_picture = $user->get_profile_picture();
+
+					?>
+
+					<div class="post-unit">
+
+						
+
+
+						<div class="face" style='background-image: url(img/<?php echo $profile_picture; ?>)'></div>
+
+						<div class="content">
+
+							<p class='text-capitalize'><a href="view_user_profile.php?person_id=<?php echo $follower_id; ?>"><?php echo $name; ?></a></p>
+							<p><?php echo $post_body; ?></p>
+
+							<!--====  add comment form =======-->
+							<form action="" method='post'>
+
+								<div class="form-group">
+									<input type="text" class="form-control" name='comment'>
+
+									<!--====  hiden fields=======-->
+									<input type="hidden" name='post_id' value="<?php echo $post_id; ?>">
+									<input type="hidden" name='user_id' value="<?php echo $user_id; ?>">
+								</div>
+
+
+								<div class="form-group">
+									<a href="view_comments.php?post_id=<?php echo $post_id ?>">Comments: <?php echo $post_comments; ?></a> 
+
+									<!--====  like button=======-->
+									<a href="likes.php?post_id=<?php echo $post_id; ?>">Likes: <?php echo $likes; ?></a>
+
+
+
+								</div>
+
+								<button class="btn btn-primary" name='comment_submit' type='submit'>Comment</button>
+
+
+								<?php 
+
+								//show the delete button if follow is the same as user
+								if($user_id == $follower_id) {
+
+									?>
+
+									<button class="btn btn-danger delete_btn" type='submit' name='delete_submit'>Delete</button>
+
+									<?php 
+								}
+
+								?>
+
+								
+
+								<?php 
+
+								//check if user liked post
+								if($post->check_like($post_id, $user_id)) {
+
+
+									?>
+
+									<button class="btn btn-danger" name='unlike_submit' type='submit'>Unlike</button>
+
+
+									<?php 
+								} else {
+
+									//show the like button
+
+									?>
+
+								
+									<button class="btn btn-default" name='like_submit' type='submit'>Like</button>
+
+
+
+									<?php 
+								}
+
+
+								?>
+								
+							</form>
+						</div>
+					</div> <!--====  end post-unit =======-->
+
+
+					<?php 
+				}
+			}
+
+
+			?>
 			
-			<!--====  post-unit=======-->
-			<div class="post-unit">
 
-				<div class="face"></div>
-
-				<div class="content">
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro id laudantium eum, ipsa adipisci iusto aspernatur, quasi officia saepe, quam laboriosam sapiente itaque. Nemo quas nobis iste, iusto eligendi. Eveniet.</p>
-						<form action="" method='post'>
-							<div class="form-group">
-								<input type="text" class="form-control" name='comment'>
-							</div>
-							<div class="form-group">
-							</div>
-								<button class="btn btn-primary">Comment</button>
-						</form>
-				</div>
-			</div> <!--====  end post-unit =======-->
+			
 
 
-			<div class="post-unit">
-
-				<div class="face"></div>
-
-				<div class="content">
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro id laudantium eum, ipsa adipisci iusto aspernatur, quasi officia saepe, quam laboriosam sapiente itaque. Nemo quas nobis iste, iusto eligendi. Eveniet.</p>
-						<form action="" method='post'>
-							<div class="form-group">
-								<input type="text" class="form-control" name='comment'>
-							</div>
-							<div class="form-group">
-							</div>
-								<button class="btn btn-primary">Comment</button>
-						</form>
-				</div>
-			</div>
 
 		</div>
-		
-	
-
-
-		
 
 	</div>
 
-</div>
 
 
-
-<?php 
-
-
-require_once "footer.php";
+	<?php 
 
 
-?>
+	require_once "footer.php";
+
+
+	?>

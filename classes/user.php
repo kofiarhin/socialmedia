@@ -29,6 +29,8 @@ class User {
 
 				$user = session::get($this->session_name);
 
+				$this->check_profile_image($user);
+
 				if($this->find($user)) {
 
 					$this->logged_in = true;
@@ -36,9 +38,11 @@ class User {
 			}
 		} else {
 
-			if($this->find($user_id)) {
+			if($this->find($user)) {
 
 				$this->check_profile_image($this->data()->user_id);
+
+			
 			}
 		}
 
@@ -72,29 +76,64 @@ class User {
 	public function check_profile_image($user_id = false) {
 
 
-		if(!$user_id) {
-
-			if(session::exist($this->session_name)) {
-
-				$user_id = session::get($this->session_name);
-
-			}
-		}
-
 
 		$profile = $this->db->get('profile_images', array('user_id', '=', $user_id));
 
 		if($profile->count()) {
 
-			$this->profile_picture = $profile->first()->file_name;
 
+
+
+			$file_name = $profile->first()->file_name;
+
+			$path = "img/".$file_name;
+
+
+
+			if(file_exists($path)) {
+
+
+				$this->profile_picture = $file_name;
+			}
+
+			return true;
 
 
 		}
 	
 
+			return false;
+
 
 			
+	}
+
+
+	public function unfollow($user_id, $person_id) {
+
+
+			$fields = array(
+
+				'user_id' => $user_id,
+				'persion_id' => $person_id
+
+			);
+
+			$sql = "delete from followers where user_id = ? and follower_id = ?";
+
+			$query = $this->db->query($sql, $fields);
+
+			if($query->count()) {
+
+
+				session::flash('messages', 'unfolowed users successfully');
+
+				return true;
+			}
+
+
+			return false;
+
 	}
 
 
@@ -320,4 +359,114 @@ class User {
 
  		return $this->profile_picture;
  	}
+
+
+ 	public function follow($fields) {
+
+
+ 		$follow = $this->db->insert('followers', $fields);
+
+ 		if($follow) {
+
+ 			session::flash("messages", "Follow success");
+ 			return true;
+ 		}
+
+ 		return false;
+
+ 	}
+
+ 	public function check_following($user_id, $person_id )  {
+
+ 			$sql = "select * from followers where user_id = ? and follower_id = ?";
+
+ 			$fields = array(
+
+ 				'user_id' => $user_id, 
+ 				'follower_id' => $person_id
+ 			);
+
+ 			$query = $this->db->query($sql, $fields);
+
+ 			if($query->count()) {
+
+
+ 				return true;
+ 			}
+
+
+ 			return false;
+ 	}
+
+  public function get_followers_post($user_id) {
+
+
+  	$sql = "select * from followers 
+	
+	inner join users
+	on followers.follower_id = users.user_id
+
+	inner join posts
+	on followers.follower_id = posts.user_id 
+
+  	where followers.user_id = ?
+
+	order by posts.post_date desc
+  	";
+
+
+
+
+  	$fields = array(
+
+  		'user_id' => $user_id
+  	);
+
+  	
+
+
+  	$query = $this->db->query($sql, $fields);
+
+  	if($query->count()) {
+
+
+  		return $query->result();
+  	}
+
+  return false;
+
+  
+  }
+
+
+  public function get_following($user_id) {
+
+
+  		$sql = "select * from followers 
+
+		inner join users
+
+		on followers.follower_id = users.user_id
+
+
+		left join profile_images
+
+		on followers.follower_id = profile_images.user_id
+
+  		where followers.user_id = ?";
+
+  		$fields = array(
+
+  			'user_id' => $user_id
+  		);
+
+  		$query = $this->db->query($sql, $fields);
+
+  		if($query->count()) {
+
+
+  			var_dump($query->result());
+  		}
+   }
+
 }
