@@ -23,6 +23,8 @@ $user = new User;
 	<div class="container">
 
 
+		<header class="main-header">
+
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
 			<a class="navbar-brand" href="index.php">Logo</a>
 			
@@ -51,14 +53,18 @@ $user = new User;
 							<a class="nav-link" href="search_user.php">Search</a>
 						</li>
 						
-
-						<li class="nav-item">
-							<a class="nav-link" href="notification.php">Notifications</a>
-						</li>
-
 						<li class="nav-item">
 							<a class="nav-link" href="following.php">Following</a>
 						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" href="followers.php">Followers</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" href="notifications.php">Notifications</a>
+						</li>
+
 
 						<li class="nav-item">
 							<a class="nav-link" href="messages.php">Messages</a>
@@ -100,7 +106,8 @@ $user = new User;
 					<form 
 					action= "" method='post' class="form-inline my-2 my-lg-0" id="inner-form-search">
 					<input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" id='search'>
-					<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+
+					<div id="search_result"></div>
 				</form>
 
 				<?php 
@@ -109,4 +116,6 @@ $user = new User;
 			?>
 		</div>
 	</nav>
+
+	</header>
 </div>

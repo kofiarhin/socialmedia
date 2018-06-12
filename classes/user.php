@@ -453,7 +453,11 @@ class User {
 
 		on followers.follower_id = profile_images.user_id
 
-  		where followers.user_id = ?";
+  		where followers.user_id = ?
+
+		order by users.name
+
+  		";
 
   		$fields = array(
 
@@ -465,8 +469,159 @@ class User {
   		if($query->count()) {
 
 
-  			var_dump($query->result());
+  			return $query->result();
   		}
+
+  		return false;
+   }
+
+
+   public function get_followers($user_id) {
+
+
+   	$sql = "select * from followers 
+
+	inner join users
+
+	on followers.user_id = users.user_id
+
+
+	left join profile_images
+	on followers.user_id = profile_images.user_id
+
+   	where follower_id = ?
+
+	order by users.name
+
+   	";
+
+   	$fields = array(
+
+   		'follower_id' => $user_id
+   	);
+
+   	$query = $this->db->query($sql, $fields);
+
+   	if($query->count()) {
+
+
+   		return ($query->result());
+   	}
+
+   	return false;
+
+   }
+
+
+   public function update_info($fields) {
+
+
+   		if($this->exist()) {
+
+
+   			$user_id = $this->data()->user_id;
+
+
+   			$update = $this->db->update('users', $fields, array('user_id', '=', $user_id));
+
+
+   			if($update) {
+
+   				session::flash('messages', 'You have successfully updated your info');
+   				return true;
+   			}
+
+   		}
+
+
+   		return false;
+
+   }
+
+
+   public function change_password($current_password, $new_password) {
+
+
+  		if($this->exist()) {
+
+
+  				$enc_password = $this->data()->password;
+
+  				$cur_salt = $this->data()->salt;
+  				$user_id = $this->data()->user_id;
+
+
+  				$enc_current_pass = hash::make($current_password, $cur_salt);
+
+  				if($enc_password == $enc_current_pass) {
+
+  					$new_salt = hash::salt(32);
+
+  					$new_enc_pass = hash::make($new_password, $new_salt);
+
+
+  					$fields = array(
+
+  						'password' => $new_enc_pass,
+  						'salt' => $new_salt
+
+  					);
+
+
+  					$update = $this->db->update('users', $fields, array('user_id', '=', $user_id));
+
+  					var_dump($update);
+
+
+  					if($update) {
+
+
+  						session::flash('messages', 'Your password was successfully updated');
+
+  						return true;
+  					}
+
+
+
+  				}
+
+  		}
+
+
+  		return false;
+
+
+   }
+
+
+   public function change_username($username) {
+
+
+   			if($this->exist()) {
+
+   				$user_id  = $this->data()->user_id;
+
+   				$fields = array(
+
+   					'username' => $username
+
+   				);
+
+
+   				$update = $this->db->update('users', $fields, array('user_id', '=', $user_id));
+
+   				if($update) {
+
+
+   					session::flash('messages', 'Username successfully changed');
+
+   					return true;
+   				}
+   			}
+
+   			return false;
+
+
    }
 
 }

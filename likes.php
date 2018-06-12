@@ -33,7 +33,7 @@ $likes = $post->get_people_likes($post_id);
 		if($likes) {
 
 
-			var_dump($likes[0]);
+			//svar_dump($likes[0]);
 
 
 			foreach ($likes as $like) {

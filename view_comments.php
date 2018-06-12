@@ -10,6 +10,8 @@
 		}
 
 
+		$user_id = $user->data()->user_id;
+
 		$post_id = input::get('post_id');
 
 		$post = new Posts($post_id);
@@ -113,14 +115,14 @@
 
 										foreach($comments as $comment) {
 
-											$user_id = $comment->user_id;
+											$person_id = $comment->user_id;
 
 											$comment_body = $comment->comment_body;
 
 											$comment_id = $comment->comment_id;
 
 
-											$user  = new User($user_id);
+											$user  = new User($person_id);
 											$profile_picture = $user->get_profile_picture();
 
 								
@@ -136,13 +138,17 @@
 													
 												</div>
 
+												<!--====  delete button=======-->	
 
+												<?php 	if($user_id == $person_id):  ?> 
 												<form action="" method='post'>
 													<input type="hidden" name='comment_id' value='<?php echo $comment_id; ?>'>
 
 													<input type="hidden" name='post_id' value='<?php echo $post_id; ?>'>
 													<button class="btn btn-danger" type='submit' name='delete_submit'>Delete</button>
 												</form>
+
+											<?php 	endif; ?>
 
 
 											</div>

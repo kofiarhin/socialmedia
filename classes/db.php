@@ -247,7 +247,6 @@ class Db {
 
 			if(!$this->query($sql, $fields)->error()) {
 
-				echo "account updated";
 				
 				return true;
 			}
