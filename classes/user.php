@@ -624,4 +624,27 @@ class User {
 
    }
 
+   public function verified() {
+
+
+   	$username = "esco";	
+
+   	$sql = "select * from followers where follower_id = ? ";
+
+   	$fields = array(
+
+   		'follower_id' => $username
+
+   	);
+
+
+   	$query = $this->db->query($sql, $fields);
+
+   	if($query->count()) {
+
+   		echo "You are verified";
+   	}
+
+   }
+
 }

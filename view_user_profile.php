@@ -219,7 +219,7 @@ if(input::exist('post', 'unfollow_submit')) {
 								<div class="content">
 
 									<p class='text-capitalize'><a href="view_user_profile.php?person_id=<?php echo $person_id; ?>"><?php echo $name; ?></a></p>
-									<p><?php echo $post_body; ?></p>
+									<p><?php echo $posts->link_add($post_body); ?></p>
 
 									<!--====  add comment form =======-->
 									<form action="" method='post'>
@@ -301,6 +301,15 @@ if(input::exist('post', 'unfollow_submit')) {
 					<?php endif; ?>
 
 					<?php 
+				} else {
+
+
+					?>
+
+	
+							<p class="alert alert-info text-center">You need to follow user before you can see timeline </p>
+
+					<?php
 				}
 
 				?>

@@ -24,18 +24,26 @@ $post = new Posts;
 
 $datas = $post->get_following_post($user->data()->user_id);
 
+$profile_pic = $user->get_profile_picture();
+
 
 ?>
 
 <div class="container">
 
+
 	<div class="row">
-
 		
+		
+		<div class="col-md-3">
+			
+			<div class="face-unit">
+				<div class="face" style="background-image: url(img/<?php echo $profile_pic; ?>); "></div>
+			</div>
+		</div>
 
-		<div class="col-md-8 offset-md-2">
-
-
+		<div class="col-md-8"/>
+			
 			<?php 
 
 			//check for session messages
@@ -73,33 +81,74 @@ $datas = $post->get_following_post($user->data()->user_id);
 			if(input::exist('post', 'post_submit')) {
 
 
-				
 
-				$fields = array (
+				$validation = new Validation;
 
-					'user_id' => input::get('user_id'), 
-					'post_body' => input::get('post_body'),
-					'post_date' => date("Y-m-d H:i:s"),
-					'post_likes' => 0,
-					'post_comments' => 0
+				$fields = array(
+
+
+					'post_body' => array(
+
+
+						'required' => true,
+						'max' => 150
+					)
+
 				);
 
-				$create = $post->create($fields);
-
-				if($create) {
 
 
-					redirect::to('timeline.php');
+				$check = $validation->check($_POST, $fields);
+
+
+				if($check->passed()) {
+
+
+					$fields = array (
+
+										'user_id' => input::get('user_id'), 
+										'post_body' => input::get('post_body'),
+										'post_date' => date("Y-m-d H:i:s"),
+										'post_likes' => 0,
+										'post_comments' => 0
+									);
+
+									$create = $post->create($fields);
+
+									if($create) {
+
+
+										redirect::to('timeline.php');
+
+									} else {
+
+
+										?>
+
+										<p class="alert alert-danger">There was a problem creating post</p>
+
+										<?php 
+									}
 
 				} else {
 
 
-					?>
+					foreach($check->errors() as $error) {
 
-					<p class="alert alert-danger">There was a problem creating post</p>
+						?>
+			
+				<p class="alert alert-danger"><?php echo $error; ?></p>
 
-					<?php 
+						<?php 
+					}
 				}
+
+
+
+			
+				
+
+				
 				
 			}
 
@@ -198,8 +247,10 @@ $datas = $post->get_following_post($user->data()->user_id);
 
 			?>
 
+
+
 			<!--====  post form =======-->
-			<form action="" method='post'>
+			<form action="" method='post' class='post-form'>
 
 				<!--====  hidden user_id =======-->
 
@@ -210,18 +261,12 @@ $datas = $post->get_following_post($user->data()->user_id);
 					<textarea name="post_body" id="" cols="30" rows="3" class="form-control" placeholder="Write something here..s"></textarea>
 				</div>
 
-				<button class="btn btn-primary" type='submit' name='post_submit'>Tweet</button>
+				<button class="btn btn-primary" type='submit' name='post_submit'>Post</button>
 			</form>
-		</div> 	 			
-	</div>
-
-
-	<div class="row timeline">
 
 
 
-
-		<div class="col-md-8 offset-md-2">
+			<!--====  end =======-->
 
 
 			<?php 
@@ -244,6 +289,7 @@ $datas = $post->get_following_post($user->data()->user_id);
 					$post_comments = $data->post_comments;
 					$likes = $data->post_likes;
 					$follower_id = $data->follower_id;
+					$username = $data->username;
 
 
 
@@ -251,6 +297,8 @@ $datas = $post->get_following_post($user->data()->user_id);
 					$user = new User($follower_id);
 
 					$profile_picture = $user->get_profile_picture();
+
+					$verified = $user->verified();
 
 					?>
 
@@ -263,8 +311,8 @@ $datas = $post->get_following_post($user->data()->user_id);
 
 						<div class="content">
 
-							<p class='text-capitalize'><a href="view_user_profile.php?person_id=<?php echo $follower_id; ?>"><?php echo $name; ?></a></p>
-							<p><?php echo $post_body; ?></p>
+							<p class='text-capitalize'><a href="view_user_profile.php?person_id=<?php echo $follower_id; ?>"><?php echo $name; ?> <span class='text-secondary'>@<?php echo $username; ?></span></a></p>
+							<p><?php echo $post->link_add($post_body); ?></p>
 
 							<!--====  add comment form =======-->
 							<form action="" method='post'>
@@ -348,12 +396,8 @@ $datas = $post->get_following_post($user->data()->user_id);
 
 			?>
 			
-
-			
-
-
-
 		</div>
+
 
 	</div>
 
